@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 
 function useStationed(id) {
   const [elapsed, setElapsed] = useState(0);      
-  const [isRunning, setIsRunning] = useState(false);  
+  const [isRunning, setIsRunning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);  // Add state for pause
 
   const prefix = `station_${id}_`;
 
@@ -10,27 +11,32 @@ function useStationed(id) {
     const savedStart = localStorage.getItem(prefix + 'timer_start');
     const savedElapsed = parseInt(localStorage.getItem(prefix + 'timer_elapsed')) || 0;
     const savedRunning = localStorage.getItem(prefix + 'timer_running') === 'true';
+    const savedPaused = localStorage.getItem(prefix + 'timer_paused') === 'true'; // Load paused state
 
-    if (savedStart && savedRunning) {
+    if (savedStart && savedRunning && !savedPaused) {
       const now = Date.now();
       const start = parseInt(savedStart, 10);
       const diffInSeconds = Math.floor((now - start) / 1000);
       setElapsed(savedElapsed + diffInSeconds);
       setIsRunning(true);
+      setIsPaused(false);  // Ensure paused state is false when the timer is running
+    } else if (savedRunning && savedPaused) {
+      setIsRunning(true);
+      setIsPaused(true); // If the timer was paused, set the state as paused
     } else {
       setElapsed(savedElapsed);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     let interval;
-    if (isRunning) {
+    if (isRunning && !isPaused) {
       interval = setInterval(() => {
         setElapsed((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [isRunning, isPaused]);
 
   const handleStart = () => {
     if (!isRunning) {
@@ -38,16 +44,30 @@ function useStationed(id) {
       localStorage.setItem(prefix + 'timer_start', Date.now().toString());
       localStorage.setItem(prefix + 'timer_elapsed', prevElapsed.toString());
       localStorage.setItem(prefix + 'timer_running', 'true');
+      localStorage.setItem(prefix + 'timer_paused', 'false'); // Make sure the paused state is set to false
       setIsRunning(true);
+      setIsPaused(false);
     }
   };
 
-   const handleReset = () => {
+  const handlePause = () => {
+    if (isRunning && !isPaused) {
+      localStorage.setItem(prefix + 'timer_paused', 'true');
+      setIsPaused(true);
+    } else if (isRunning && isPaused) {
+      localStorage.setItem(prefix + 'timer_paused', 'false');
+      setIsPaused(false);
+    }
+  };
+
+  const handleReset = () => {
     localStorage.removeItem(prefix + 'timer_start');
     localStorage.removeItem(prefix + 'timer_elapsed');
     localStorage.removeItem(prefix + 'timer_running');
+    localStorage.removeItem(prefix + 'timer_paused');
     setElapsed(0);
     setIsRunning(false);
+    setIsPaused(false);
   };
 
   const formatTime = (totalSeconds) => {
@@ -66,7 +86,9 @@ function useStationed(id) {
   return {
     elapsed,
     isRunning,
+    isPaused,
     handleStart,
+    handlePause,
     handleReset,
     formatTime,
     calculateMoney,

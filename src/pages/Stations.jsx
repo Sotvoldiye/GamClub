@@ -13,7 +13,14 @@ function Stations() {
     }
   }, []);
 
-  const { calculateMoney, formatTime, handleReset, handleStart, elapsed } = useStationed();
+  const {    elapsed, 
+    isRunning, 
+    isPaused, 
+    handleStart, 
+    handlePause, 
+    handleReset, 
+    formatTime, 
+    calculateMoney  } = useStationed();
 
   const handleModalClose = (e) => {
     e.preventDefault()
@@ -31,11 +38,17 @@ function Stations() {
             <p className="status inactive">Inactive</p>
             <p className="timer">{formatTime(elapsed)}</p>
             <p>{calculateMoney(elapsed)} so'm</p>
-            <button onClick={() => setSelectedStation(item.name)}>Start Session</button>
+            {!isRunning ? (
+                  <button onClick={handleStart}>Start Session</button>
+                ) : isPaused ? (
+                  <button onClick={handlePause}>Resume Session</button>
+                ) : (
+                  <button onClick={handlePause}>Pause Session</button>
+                )}
             <button onClick={handleReset}>Reset</button>
           </div>
         <div className='relative'>
-        {selectedStation === item.name && <Modal closeModal={handleModalClose} />}
+        {/* {selectedStation === item.name && <Modal closeModal={handleModalClose} />} */}
         </div>
          </div>        ))}
       </div>

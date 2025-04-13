@@ -38,17 +38,20 @@ function useStationed(id) {
     return () => clearInterval(interval);
   }, [isRunning, isPaused]);
 
-  const handleStart = () => {
-    if (!isRunning) {
-      const prevElapsed = parseInt(localStorage.getItem(prefix + 'timer_elapsed')) || 0;
-      localStorage.setItem(prefix + 'timer_start', Date.now().toString());
-      localStorage.setItem(prefix + 'timer_elapsed', prevElapsed.toString());
-      localStorage.setItem(prefix + 'timer_running', 'true');
-      localStorage.setItem(prefix + 'timer_paused', 'false'); // Make sure the paused state is set to false
-      setIsRunning(true);
-      setIsPaused(false);
-    }
+  const handleStart = (formData) => {
+    const { duration } = formData;
+    const durationInSeconds = parseInt(duration) * 60;
+  
+    const prevElapsed = parseInt(localStorage.getItem(prefix + 'timer_elapsed')) || 0;
+    localStorage.setItem(prefix + 'timer_start', Date.now().toString());
+    localStorage.setItem(prefix + 'timer_duration', durationInSeconds.toString()); // yangi
+    localStorage.setItem(prefix + 'timer_elapsed', prevElapsed.toString());
+    localStorage.setItem(prefix + 'timer_running', 'true');
+    localStorage.setItem(prefix + 'timer_paused', 'false');
+    setIsRunning(true);
+    setIsPaused(false);
   };
+  
 
   const handlePause = () => {
     if (isRunning && !isPaused) {

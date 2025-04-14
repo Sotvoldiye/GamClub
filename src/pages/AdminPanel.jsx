@@ -24,11 +24,11 @@ function AdminPanel() {
   };
   console.log(malumot)
   return (
-    <div className="container flex flex-col text-left h-[100%] m-auto absolute">
+    <div className="container flex flex-col text-left h-[100%] ml-auto w-full absolute items-center">
       <div className="text-2xl mb-3">Kompyuter yoki PS qo'shish</div>
       <form
         onSubmit={handleClick}
-        className="flex flex-col gap-2 w-[400px] items-center"
+        className="flex flex-col gap-2 w-[400px] mr-auto ml-auto"
       >
         <FormInput name="name" label="Ko'myutermi yo PS ?" type="text" />
         <FormInput name="versiya" label="Qaysi versiya ?" type="text" />

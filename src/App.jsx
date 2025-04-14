@@ -2,7 +2,7 @@ import { Children } from "react"
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import MainLayout from "./layout/MainLayout"
 import Stations from "./pages/Stations"
-import SessionHistory from "./pages/SessionHistory"
+import SessionHistoryed from "./pages/SessionHistory"
 import AdminPanel from "./pages/AdminPanel"
 
 
@@ -17,7 +17,7 @@ function App() {
       },
       {
         path: "/session/history",
-        element: <SessionHistory/>
+        element: <SessionHistoryed/>
       },
       {path: "/station",
         element:<Stations/>
